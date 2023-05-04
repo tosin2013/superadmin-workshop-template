@@ -4,7 +4,7 @@ controller_projects:
     description: "Project to manage the CasC of the {{ orgs }} Org"
     organization: "{{ orgs }}"
     scm_type: git
-    scm_url: "git@GITLAB_HOST:automationiberia/aap-cac/{{ orgs }}.git"
+    scm_url: "git@{{ gitlab_host }}:automationiberia/aap-cac/{{ orgs }}.git"
     scm_credential: "{{ orgs }} {{ env }} GitLab Credential"
     scm_branch: "{{ casc_gitlab_scm_branch | default(env) }}"
     scm_clean: false
