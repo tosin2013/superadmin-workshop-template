@@ -44,7 +44,7 @@
       tags:
         - always
   roles:
-    - role: redhat_cop.controller_configuration.filetree_read
+    - role: infra.controller_configuration.filetree_read
       vars:
         filetree_controller_settings: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_settings.d/"
         filetree_controller_organizations: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_organizations.d/"
@@ -68,7 +68,7 @@
         filetree_controller_schedules: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_schedules.d/"
         filetree_controller_roles: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_roles.d/"
 
-    - role: redhat_cop.controller_configuration.object_diff
+    - role: infra.controller_configuration.object_diff
       vars:
         protect_not_empty_orgs: true
         controller_configuration_object_diff_tasks:
@@ -85,7 +85,7 @@
           - {name: credentials, var: controller_credentials, tags: credentials}
           # - {name: credential_types, var: controller_credential_types, tags: credential_types}
           - {name: organizations, var: controller_organizations, tags: organizations}
-    - role: redhat_cop.controller_configuration.dispatch
+    - role: infra.controller_configuration.dispatch
       vars:
         controller_configuration_dispatcher_roles:
           - {role: workflow_job_templates, var: controller_workflows, tags: workflow_job_templates}

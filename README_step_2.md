@@ -21,9 +21,7 @@ $ ansible-navigator run casc_ctrl_config.yml -i inventory -l dev -e '{orgs: supe
 > ```yaml
 > ---
 > collections:
->   # redhat_cop.controller_configuration will be replaced by infra.controller_configuration
->   - name: redhat_cop.controller_configuration
->   # - name: infra.controller_configuration
+>   - name: infra.controller_configuration
 > ...
 > ```
 
@@ -36,7 +34,7 @@ Once the objects has been created at the Ansible Automation Controller, there ar
 Following steps must be performed to configure the GitLab Webhook to run the Continuous Integration for the CasC in the specified organization:
 
 1. Get the Job Template's webhook configuration:
-   
+
    | ![Configure Webhook Get Config][configure_webhook_get_config] |
    |:--:|
    | **Fig. 2.2.1.1. Configure Webhook Get Config** |
@@ -45,9 +43,9 @@ Following steps must be performed to configure the GitLab Webhook to run the Con
    > | ![Configure Webhook Named URL][configure_webhook_named_url] |
    > |:--:|
    > | **Fig. 2.2.1.2. Configure Webhook Named URL** |
-   
+
 2. Set the webhook information at the GitLab repository:
-   
+
    | ![Configure Webhook Set Info][configure_webhook_set_info] |
    |:--:|
    | **Fig. 2.2.1.3. Configure webhook Set Info** |

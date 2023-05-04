@@ -31,7 +31,7 @@
 
     - name: Configure Controller Job Launch | Launch launch_jobs Drop Diff (Delete)
       include_role:
-        name: redhat_cop.controller_configuration.job_launch
+        name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
           - name: "{{ __drop_diff_org_tags_item.key }} CasC Ctrl Drop Diff"
@@ -53,7 +53,7 @@
 
     - name: Configure Controller Job Launch | Launch launch_jobs creation
       include_role:
-        name: redhat_cop.controller_configuration.job_launch
+        name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
           - name: "{{ __config_controller_org_tags_item.key }} CasC Ctrl Config"

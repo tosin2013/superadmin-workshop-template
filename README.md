@@ -14,7 +14,7 @@ The basis to configure an Automation Controller through a Configuration as Code 
 
 * **AWX / Ansible.Controller**: which is a collection that brings together all the modules and Ansible content related to the management of the AWX/Controller. It provides modules to connect and manage all objects of the AWX/Controller, however it does not have functionalities to use it in a scalable way.
 
-* **redhat_cop.controller_configuration**: This collection provides a whole layer of functionalities on top of the AWX / Ansible.Controller base collection. It basically implements these modules, adding flexibility to work in a scalable way to manage the AWX/Controller. The most outstanding features are:
+* **infra.controller_configuration**: This collection provides a whole layer of functionalities on top of the AWX / Ansible.Controller base collection. It basically implements these modules, adding flexibility to work in a scalable way to manage the AWX/Controller. The most outstanding features are:
   - It is possible to work with lists of objects in yaml format, which do not need to perform any loop when using them, just call the role within the collection.
   - It is possible to consume the configuration from custom sources, that is, it is possible to have the configuration from a custom directory structure.
   - Role to export objects in yaml format to be consumed.
@@ -22,7 +22,7 @@ The basis to configure an Automation Controller through a Configuration as Code 
   - The ansible roles used from this collection to create the continuous deployment flow are the following:
     * __filetree_read__: An ansible role which reads variables from a hierarchical and scalable directory structure which is grouped based on the configuration code life-cycle. It could be used to run the role filetree_read to load variables followed by dispatch role to apply the configuration.
     * __filetree_create__: The role filetree_create is intended to be used as the first step to begin using the Configuration as Code on Ansible Tower or Ansible Automation Controller, when you already have a running instance of any of them. Obviously, you could also start to write your objects as code from scratch, but the idea behind the creation of that role is to simplify your lives and make that task a little bit easier.
-    * __object_diff__: An ansible role to manage the object diff of the AWX or Automation Controller configuration. This role leverages the controller_object_diff.py lookup plugin of the redhat_cop.controller_configuration, comparing two lists, one taken directly from the API and the other one from the git repository, and it could be used to delete objects in the AWX or Automation Controller that are not defined in the git repository list.
+    * __object_diff__: An ansible role to manage the object diff of the AWX or Automation Controller configuration. This role leverages the controller_object_diff.py lookup plugin of the infra.controller_configuration, comparing two lists, one taken directly from the API and the other one from the git repository, and it could be used to delete objects in the AWX or Automation Controller that are not defined in the git repository list.
     * __dispatch__: An Ansible Role to run all roles on Ansible Controller.
 
 ## How to organize it to be scalable and flexible?

@@ -33,10 +33,10 @@
         - always
 
   roles:
-    # - {role: redhat_cop.controller_configuration.filetree_read, assign_galaxy_credentials_to_org: false}
-    # - {role: redhat_cop.controller_configuration.dispatch, assign_galaxy_credentials_to_org: false}
-    - {role: redhat_cop.controller_configuration.filetree_read}
-    - {role: redhat_cop.controller_configuration.dispatch}
+    # - {role: infra.controller_configuration.filetree_read, assign_galaxy_credentials_to_org: false}
+    # - {role: infra.controller_configuration.dispatch, assign_galaxy_credentials_to_org: false}
+    - {role: infra.controller_configuration.filetree_read}
+    - {role: infra.controller_configuration.dispatch}
 
   post_tasks:
     - name: "Delete the Authentication Token used"
