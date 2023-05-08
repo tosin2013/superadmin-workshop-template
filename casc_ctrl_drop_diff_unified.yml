@@ -36,6 +36,8 @@
       tags:
         - always
     - name: "Clone the required repo"
+      environment:
+        - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
       ansible.builtin.git:
         repo: "{{ project_to_clone | ansible.builtin.regex_replace('http://','http://'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
         dest: "./checkout"
