@@ -40,8 +40,7 @@
         name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
-          # - name: "{{ __drop_diff_org_tags_item.key }}-CASC-CTRL-DROP-DIFF"
-          - name: "{{ __drop_diff_org_tags_item.key }}-CASC-CTRL-DROP-DIFF-UNIFIED"
+          - name: "{{ __drop_diff_org_tags_item.key }} CasC Ctrl Drop Diff Unified"
             # scm_branch: "centralize_casc"
             extra_vars:
               orgs: "{{ __drop_diff_org_tags_item.key }}"
@@ -65,8 +64,7 @@
         name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
-          # - name: "{{ __config_controller_org_tags_item.key }}-CASC-CTRL-CONFIG"
-          - name: "{{ __config_controller_org_tags_item.key }}-CASC-CTRL-CONFIG-UNIFIED"
+          - name: "{{ __config_controller_org_tags_item.key }} CasC Ctrl Config Unified"
             # scm_branch: "{{ __casc_gitlab_scm_branch }}"
             extra_vars:
               orgs: "{{ __config_controller_org_tags_item.key }}"
