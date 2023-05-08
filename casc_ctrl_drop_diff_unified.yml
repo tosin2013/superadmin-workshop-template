@@ -39,7 +39,7 @@
       environment:
         - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
       ansible.builtin.git:
-        repo: "{{ project_to_clone | ansible.builtin.regex_replace('http://','http://'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
+        repo: "{{ project_to_clone | ansible.builtin.regex_replace('(https?://)','\\1'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
         dest: "./checkout"
         version: "{{ casc_gitlab_scm_branch }}"
       # no_log: true
