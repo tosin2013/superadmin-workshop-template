@@ -31,6 +31,8 @@
           fail_msg: "the 'admin_user' variable must be defined"
 
     - name: "Create all the required objects"
+      vars:
+        gitlab_host: "{{ (lookup('env', 'PROJECT_URL_CASC') | default(GITLAB_HOST, true)) | regex_search('([^@]*)@([^:]*):.*', '\\2') | first }}"
       ansible.builtin.template:
         src: "{{ current_file.src }}"
         dest: "{{ current_file.dest }}"
