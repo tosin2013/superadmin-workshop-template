@@ -9,7 +9,7 @@ controller_templates:
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ organization_name }} {{ env }} AAP Credential"
+      - "{{ organization_name }} {{ env }} AAP CasC Credential"
       - "{{ orgs }} {{ env }} Vault Credential"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
@@ -27,7 +27,7 @@ controller_templates:
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ organization_name }} {{ env }} AAP Credential"
+      - "{{ organization_name }} {{ env }} AAP CasC Credential"
       - "{{ orgs }} {{ env }} Vault Credential"
       - "{{ orgs }} {{ env }} GitLab API Token"
     concurrent_jobs_enabled: true
@@ -48,7 +48,7 @@ controller_templates:
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ organization_name }} {{ env }} AAP Credential"
+      - "{{ organization_name }} {{ env }} AAP CasC Credential"
       - "{{ orgs }} {{ env }} Vault Credential"
       - "{{ orgs }} {{ env }} GitLab API Token"
     webhook_service: "gitlab"
