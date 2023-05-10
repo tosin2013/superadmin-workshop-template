@@ -43,19 +43,20 @@
       loop:
         - src: "templates/new_project_controller_organizations.j2"
           dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_organizations.d/{{ organization_name }}.yml"
-        - src: "templates/new_project_controller_projects.j2"
-          dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_projects.d/{{ organization_name }}_casc.yml"
         - src: "templates/new_project_controller_job_templates.j2"
           dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_job_templates.d/{{ organization_name }}_casc.yml"
         - src: "templates/new_project_controller_credentials.j2"
           dest: "{{ orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_credentials.d/{{ organization_name }}_casc.yml"
+        - src: "templates/new_project_controller_user_accounts_admin.j2"
+          dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_users.d/{{ organization_name }}_admin.yml"
+        - src: "templates/new_project_controller_user_accounts_casc.j2"
+          dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_users.d/{{ organization_name }}_casc.yml"
         - src: "templates/new_project_controller_roles.j2"
           dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_roles.d/{{ organization_name }}.yml"
     - name: "Show manual steps"
       debug:
         msg:
           - "Remember to:"
-          - "  - Add the user {{ admin_user }} manually at orgs_vars/{{ orgs }}/env/{{ env }}/controller_users.d/controller_user_accounts.yml"
           - "  - TODO: crear token en el proyecto git nuevo para usar en las credentials. Se define on-the-fly para creación inicial. Se crea en el repo nuevo con ese contenido"
 ...
 ####

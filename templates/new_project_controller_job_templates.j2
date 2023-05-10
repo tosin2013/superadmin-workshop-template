@@ -3,7 +3,7 @@ controller_templates:
   - name: "{{ organization_name }} CasC Ctrl CD Webhook Trigger"
     description: "Template to attend Controller CasC webhook"
     organization: "{{ orgs }}"
-    project: "{{ organization_name }} CasC Data"
+    project: "{{ orgs }} CasC Data"
     inventory: "{{ orgs }} Controller"
     playbook: "central_casc_ctrl_cd_webhook_trigger.yml"
     job_type: run
@@ -20,7 +20,7 @@ controller_templates:
   - name: "{{ organization_name }} CasC Ctrl Config Unified"
     description: "Template to attend Controller CasC Configuration"
     organization: "{{ orgs }}"
-    project: "{{ organization_name }} CasC Data"
+    project: "{{ orgs }} CasC Data"
     inventory: "{{ orgs }} Controller"
     playbook: "casc_ctrl_config_unified.yml"
     job_type: run
@@ -41,7 +41,7 @@ controller_templates:
   - name: "{{ organization_name }} CasC Ctrl Drop Diff Unified"
     description: "Template to attend Controller CasC Drop Diff"
     organization: "{{ orgs }}"
-    project: "{{ organization_name }} CasC Data"
+    project: "{{ orgs }} CasC Data"
     inventory: "{{ orgs }} Controller"
     playbook: "casc_ctrl_drop_diff_unified.yml"
     job_type: run
