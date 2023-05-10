@@ -15,4 +15,9 @@ controller_roles:
     job_templates:
       - "{{ organization_name }} CasC Ctrl Drop Diff Unified"
     role: read
+  # {{ organization_name | lower | regex_replace(' ','_') }}_casc_user
+  - user: "{{ organization_name | lower | regex_replace(' ','_') }}_casc_user"
+    organizations:
+      - "{{ organization_name }}"
+    role: admin
 ...

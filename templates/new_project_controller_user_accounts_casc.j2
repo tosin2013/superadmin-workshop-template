@@ -1,6 +1,6 @@
 ---
 controller_user_accounts:
-  - username: "{{ organization_name }}_casc_user"
+  - username: "{{ organization_name | lower | regex_replace(' ','_') }}_casc_user"
     password: !vault |
       $ANSIBLE_VAULT;1.1;AES256
       38343666626265666637666536303035636630336465303666636164373965613666653863656239
