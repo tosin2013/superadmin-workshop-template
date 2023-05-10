@@ -10,6 +10,7 @@ controller_templates:
     fact_caching_enabled: false
     credentials:
       - "{{ orgs }} {{ env }} AAP Credential"
+      - "{{ orgs }} {{ env }} Vault Credential"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
