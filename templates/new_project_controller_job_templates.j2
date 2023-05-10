@@ -9,7 +9,7 @@ controller_templates:
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ orgs }} {{ env }} AAP Credential"
+      - "{{ organization_name }} {{ env }} AAP Credential"
       - "{{ orgs }} {{ env }} Vault Credential"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
