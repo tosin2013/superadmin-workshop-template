@@ -1,10 +1,11 @@
 ---
-- username: "{{ admin_user }}"
-  password: "initialadminpass"
-  email: "{{ organization_name }}_adminuser@example.com"
-  firstname: "{{ organization_name }}_adminuser"
-  lastname: "{{ organization_name }}_adminuser"
-  is_auditor: False
-  is_superuser: False
-  update_secrets: False
+controller_user_accounts:
+  - username: "{{ admin_user }}"
+    password: "initialadminpass"
+    email: "{{ organization_name }}_adminuser@example.com"
+    firstname: "{{ organization_name }}_adminuser"
+    lastname: "{{ organization_name }}_adminuser"
+    is_auditor: False
+    is_superuser: False
+    update_secrets: False
 ...
