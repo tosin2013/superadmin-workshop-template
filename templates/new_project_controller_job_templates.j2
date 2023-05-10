@@ -27,8 +27,8 @@ controller_templates:
     fact_caching_enabled: false
     credentials:
       - "{{ organization_name }} {{ env }} AAP Credential"
-      - "{{ organization_name }} {{ env }} Vault Credential"
-      - "{{ organization_name }} {{ env }} GitLab API Token"
+      - "{{ orgs }} {{ env }} Vault Credential"
+      - "{{ orgs }} {{ env }} GitLab API Token"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
     ask_tags_on_launch: true
@@ -48,8 +48,8 @@ controller_templates:
     fact_caching_enabled: false
     credentials:
       - "{{ organization_name }} {{ env }} AAP Credential"
-      - "{{ organization_name }} {{ env }} Vault Credential"
-      - "{{ organization_name }} {{ env }} GitLab API Token"
+      - "{{ orgs }} {{ env }} Vault Credential"
+      - "{{ orgs }} {{ env }} GitLab API Token"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
