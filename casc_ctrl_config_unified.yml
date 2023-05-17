@@ -10,10 +10,6 @@
     controller_hostname: "{{ vault_controller_hostname | default(lookup('env', 'CONTROLLER_HOST')) }}"
     controller_validate_certs: "{{ vault_controller_validate_certs | default(lookup('env', 'CONTROLLER_VERIFY_SSL')) }}"
   pre_tasks:
-    - debug:
-        msg:
-          - "'{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}'"
-          - "{{ lookup('ansible.builtin.pipe', 'env') }}"
     - name: "Setup authentication (block)"
       block:
         - name: "Get the Authentication Token for the future requests"

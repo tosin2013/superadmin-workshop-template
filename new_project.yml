@@ -2,6 +2,37 @@
 - hosts: localhost
   connection: local
   gather_facts: false
+  vars:
+    query_controller_api_max_objects: 1
+  pre_tasks:
+    - name: "Check requirements (block)"
+      tags:
+        - always
+      block:
+        - name: "Check installed collections (block)"
+          block:
+            - name: "Check if the collection ansible.controller is installed"
+              ansible.builtin.set_fact:
+                ansible_controller_collection_installed: "{{ lookup('ansible.builtin.pipe', 'ansible-galaxy collection list | grep -i ansible.controller || echo NOTINSTALLED') }}"
+              failed_when: ansible_controller_collection_installed is match('NOTINSTALLED')
+          rescue:
+            - name: "Check if the collection awx.awx is installed"
+              ansible.builtin.set_fact:
+                awx_awx_collection_installed: "{{ lookup('ansible.builtin.pipe', 'ansible-galaxy collection list | grep -i awx.awx || echo NOTINSTALLED') }}"
+              failed_when: awx_awx_collection_installed is match('NOTINSTALLED')
+          always:
+            - name: "Set the collection providing the controller_api lookup plugin"
+              ansible.builtin.set_fact:
+                controller_api_plugin: "{{ ('ansible.controller.controller_api' if ansible_controller_collection_installed is defined) | default('awx.awx.controller_api' if awx_awx_collection_installed is defined) | default('NONE') }}"
+
+            - name: "Fail if no collection is detected"
+              ansible.builtin.fail:
+                msg: "One of the following collections is required to be installed: 'ansible.controller' or 'awx.awx'."
+              when: controller_api_plugin is match('NONE')
+            - name: "Show the plugin we are using"
+              ansible.builtin.debug:
+                msg: "Using the 'controller_api' plugin from: {{ controller_api_plugin }}"
+
   tasks:
     - name: "Assert that the required input variables are defined"
       ansible.builtin.assert:
@@ -15,27 +46,40 @@
         - conditions:
             - organization_name is defined
             - organization_name | length > 0
-          fail_msg: "the 'organization_name' variable must be defined"
+          fail_msg: "the 'organization_name' variable must be defined {{ ('. Current value is: ' + organization_name) if organization_name is defined }}"
         - conditions:
             - organization_desc is defined
             - organization_desc | length > 0
-          fail_msg: "the 'organization_desc' variable must be defined to give a description to the organization"
+          fail_msg: "the 'organization_desc' variable must be defined to give a description to the organization {{ ('. Current value is: ' + organization_desc) if organization_desc is defined }}"
         - conditions:
             - instance_groups is defined
-            - instance_groups | type_debug is match('list')
+            - (instance_groups | type_debug is match('list')) or (instance_groups | type_debug in ['AnsibleUnicode','AnsibleUnsafeText'])
             - instance_groups | length > 0
-          fail_msg: "the 'instance_groups' variable must be defined and can't be empty"
+          fail_msg: "the 'instance_groups' variable must be defined and can't be empty. Can be either a list or comma separated string {{ ('. Current value is: ' + instance_groups + ' - ' + instance_groups|type_debug) if instance_groups is defined }}"
         - conditions:
             - admin_user is defined
             - admin_user | length > 0
-          fail_msg: "the 'admin_user' variable must be defined"
+          fail_msg: "the 'admin_user' variable must be defined {{ ('. Current value is: ' + admin_user) if admin_user is defined }}"
+
+    - name: "Set the GitLab URL for the CasC project"
+      set_fact:
+        gitlab_casc_repo: "{{ gitlab_api_url }}/{{ gitlab_group }}/{{ gitlab_subgroup }}/{{ orgs }}.git"
+
+    - name: "Clone the required repo"
+      environment:
+        - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
+      ansible.builtin.git:
+        repo: "{{ gitlab_casc_repo | ansible.builtin.regex_replace('(https?://)','\\1'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
+        dest: "./checkout"
+        version: "{{ awx_project_scm_branch }}"
+      no_log: false
 
     - name: "Create all the required objects"
       vars:
         gitlab_host: "{{ (lookup('env', 'PROJECT_URL_CASC') | default(GITLAB_HOST, true)) | regex_search('([^@]*)@([^:]*):.*', '\\2') | first }}"
       ansible.builtin.template:
         src: "{{ current_file.src }}"
-        dest: "{{ current_file.dest }}"
+        dest: "./checkout/{{ current_file.dest }}"
         mode: '0644'
       loop_control:
         loop_var: current_file
@@ -53,16 +97,68 @@
           dest: "{{ orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_users.d/{{ organization_name }}_casc.yml"
         - src: "templates/new_project_controller_roles.j2"
           dest: "{{ orgs_vars }}/{{ orgs }}/env/common/controller_roles.d/{{ organization_name }}.yml"
-    - name: "Show manual steps"
-      debug:
-        msg:
-          - "Remember to:"
-          - "  - TODO: crear token en el proyecto git nuevo para usar en las credentials. Se define on-the-fly para creación inicial. Se crea en el repo nuevo con ese contenido"
+
+    - name: "Push the new objects to the {{ orgs }} organization"
+      environment:
+        - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
+      ansible.builtin.shell: |
+        git config --global user.name "CasC_New_Org"
+        git config --global user.email "cascneworg@example.com"
+        git add -A && git commit -m "CasC New Organization Job ID {{ tower_job_id }}: {{ organization_name }} Automated Commit by Ansible  "
+        git push -o merge_request.create -o merge_request.target="{{ env }}" -o merge_request.title="New Org {{ organization_name }}" -o merge_request.merge_when_pipeline_succeeds
+      args:
+        chdir: "./checkout"
+      ignore_errors: true
+      register: output
+      failed_when:
+        - output.msg != ""
+        - (
+            "error" in output.msg or
+            "conflict" in output.msg or
+            "Errno" in output.msg or
+            "fatal" in output.msg or (
+              output.stdout != "" and "nothing to commit, working tree clean" not in output.stdout
+            ) or
+            (output.stderr != "")
+          )
+
+    - name: "Wait for the CasC Job Template to be created"
+      vars:
+        controller_hostname: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+        controller_oauthtoken: "{{ lookup('env', 'CONTROLLER_OAUTH_TOKEN') }}"
+        controller_validate_certs: "{{ lookup('env', 'CONTROLLER_VERIFY_SSL') }}"
+      ansible.builtin.set_fact:
+        casc_jt_lookvar: "{{ query(controller_api_plugin, 'api/v2/job_templates/',
+                                   host=controller_hostname, oauth_token=controller_oauthtoken, verify_ssl=controller_validate_certs,
+                                   return_all=true, max_objects=query_controller_api_max_objects,
+                                   query_params={ 'name': organization_name + ' CasC Ctrl CD Webhook Trigger' }
+                                  )
+                          }}"
+      register: jt_casc_res
+      retries: 18
+      delay: 10
+      until: jt_casc_res.ansible_facts.casc_jt_lookvar | length > 0
+      loop_control:
+        label: "Looking for the Job Template '{{ organization_name }} CasC Ctrl CD Webhook Trigger'..."
+
+    - name: "Create output artifacts"
+      set_stats:
+        data:
+          job_template_name: "{{ organization_name }} CasC Ctrl CD Webhook Trigger"
+
+    # - name: "Show manual steps"
+    #   debug:
+    #     msg:
+    #       - "{{ jt_casc_res }}"
+    #       - "Remember to:"
+    #       - "  - TODO: crear token en el proyecto git nuevo para usar en las credentials. Se define on-the-fly para creación inicial. Se crea en el repo nuevo con ese contenido"
+    #       - "{{ lookup('pipe', 'pwd') }}"
+    #       - "{{ lookup('pipe', 'ls -lart') }}"
 ...
 ####
 # Running examples:
 #### Using ansible-playbook
-# ansible-playbook new_project.yml -e '{organization_name: TESTORG, organization_desc: "TESTORG Organization", instance_groups: [MADRID], admin_user: "testorgadminuser", orgs_vars: "orgs_vars", orgs: SUPERADMIN, env: PRE, casc_gitlab_scm_branch: centralize_casc}'
+# ansible-playbook new_project.yml -e '{organization_name: TESTORG, organization_desc: "TESTORG Organization", instance_groups: [MADRID], admin_user: "testorgadminuser", orgs_vars: "orgs_vars", orgs: SUPERADMIN, env: PRE, awx_project_scm_branch: centralize_casc}'
 #### Using ansible-navigator
-# ansible-navigator run new_project.yml -i localhost, -m stdout --eei xcum2idas010.pre.npro.onpremise.es.bs/ee-casc:latest -e '{organization_name: TESTORG, organization_desc: "TESTORG Organization", instance_groups: [MADRID], admin_user: "testorgadminuser", orgs_vars: "orgs_vars", orgs: SUPERADMIN, env: PRE, casc_gitlab_scm_branch: centralize_casc}' --vault-password-file .vault_password --pa='--tls-verify=false'
+# ansible-navigator run new_project.yml -i localhost, -m stdout --eei xcum2idas010.pre.npro.onpremise.es.bs/ee-casc:latest -e '{organization_name: TESTORG, organization_desc: "TESTORG Organization", instance_groups: [MADRID], admin_user: "testorgadminuser", orgs_vars: "orgs_vars", orgs: SUPERADMIN, env: PRE, awx_project_scm_branch: centralize_casc}' --vault-password-file .vault_password --pa='--tls-verify=false'
 ####
