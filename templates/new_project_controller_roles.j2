@@ -9,11 +9,11 @@ controller_roles:
     role: admin
   - user: "{{ admin_user }}"
     job_templates:
-      - "{{ organization_name }} CasC Ctrl Config Unified"
+      - "{{ organization_name }} {{ env }} CasC Ctrl Config Unified"
     role: read
   - user: "{{ admin_user }}"
     job_templates:
-      - "{{ organization_name }} CasC Ctrl Drop Diff Unified"
+      - "{{ organization_name }} {{ env }} CasC Ctrl Drop Diff Unified"
     role: read
   # {{ organization_name | lower | regex_replace(' ','_') }}_casc_user
   - user: "{{ organization_name | lower | regex_replace(' ','_') }}_casc_user"
