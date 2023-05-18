@@ -139,12 +139,12 @@
       delay: 10
       until: jt_casc_res.ansible_facts.casc_jt_lookvar | length > 0
       loop_control:
-        label: "Looking for the Job Template '{{ organization_name }} CasC Ctrl CD Webhook Trigger'..."
+        label: "Looking for the Job Template '{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger'..."
 
     - name: "Create output artifacts"
       set_stats:
         data:
-          job_template_name: "{{ organization_name }} CasC Ctrl CD Webhook Trigger"
+          job_template_name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
 
     # - name: "Show manual steps"
     #   debug:
