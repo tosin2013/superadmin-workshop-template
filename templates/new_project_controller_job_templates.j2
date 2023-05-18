@@ -1,10 +1,10 @@
 ---
 controller_templates:
-  - name: "{{ organization_name }} CasC Ctrl CD Webhook Trigger"
+  - name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
     description: "Template to attend Controller CasC webhook"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} CasC Data"
-    inventory: "{{ orgs }} Controller"
+    project: "{{ orgs }} {{ env }} CasC Data"
+    inventory: "{{ orgs }} {{ env }} Controller"
     playbook: "central_casc_ctrl_cd_webhook_trigger.yml"
     job_type: run
     fact_caching_enabled: false
@@ -18,11 +18,11 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} CasC Ctrl Config Unified"
+  - name: "{{ organization_name }} {{ env }} CasC Ctrl Config Unified"
     description: "Template to attend Controller CasC Configuration"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} CasC Data"
-    inventory: "{{ orgs }} Controller"
+    project: "{{ orgs }} {{ env }} CasC Data"
+    inventory: "{{ orgs }} {{ env }} Controller"
     playbook: "casc_ctrl_config_unified.yml"
     job_type: run
     fact_caching_enabled: false
@@ -39,11 +39,11 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} CasC Ctrl Drop Diff Unified"
+  - name: "{{ organization_name }} {{ env }} CasC Ctrl Drop Diff Unified"
     description: "Template to attend Controller CasC Drop Diff"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} CasC Data"
-    inventory: "{{ orgs }} Controller"
+    project: "{{ orgs }} {{ env }} CasC Data"
+    inventory: "{{ orgs }} {{ env }} Controller"
     playbook: "casc_ctrl_drop_diff_unified.yml"
     job_type: run
     fact_caching_enabled: false
