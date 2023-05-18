@@ -34,7 +34,7 @@
         name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
-          - name: "{{ __drop_diff_org_tags_item.key }} CasC Ctrl Drop Diff"
+          - name: "{{ __drop_diff_org_tags_item.key }} {{ __env }} CasC Ctrl Drop Diff"
             scm_branch: "{{ __casc_gitlab_scm_branch }}"
             extra_vars:
               orgs: "{{ __drop_diff_org_tags_item.key }}"
@@ -56,7 +56,7 @@
         name: infra.controller_configuration.job_launch
       vars:
         controller_launch_jobs:
-          - name: "{{ __config_controller_org_tags_item.key }} CasC Ctrl Config"
+          - name: "{{ __config_controller_org_tags_item.key }} {{ __env }} CasC Ctrl Config"
             scm_branch: "{{ __casc_gitlab_scm_branch }}"
             extra_vars:
               orgs: "{{ __config_controller_org_tags_item.key }}"
