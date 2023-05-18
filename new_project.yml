@@ -123,35 +123,29 @@
           )
 
     - name: "Wait for the CasC Job Template to be created"
+      debug:
+        msg:
+          - "Waiting for '{{ jt_name }}' to be created..."
       vars:
         controller_hostname: "{{ lookup('env', 'CONTROLLER_HOST') }}"
         controller_oauthtoken: "{{ lookup('env', 'CONTROLLER_OAUTH_TOKEN') }}"
         controller_validate_certs: "{{ lookup('env', 'CONTROLLER_VERIFY_SSL') }}"
-      ansible.builtin.set_fact:
-        casc_jt_lookvar: "{{ query(controller_api_plugin, 'api/v2/job_templates/',
-                                   host=controller_hostname, oauth_token=controller_oauthtoken, verify_ssl=controller_validate_certs,
-                                   return_all=true, max_objects=query_controller_api_max_objects,
-                                   query_params={ 'name': organization_name + ' ' + env + ' CasC Ctrl CD Webhook Trigger' }
-                                  )
-                          }}"
-      register: jt_casc_res
+        jt_name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
+        query_res: "{{ query(controller_api_plugin, 'api/v2/job_templates/',
+                             host=controller_hostname, oauth_token=controller_oauthtoken, verify_ssl=controller_validate_certs,
+                             return_all=true, max_objects=query_controller_api_max_objects,
+                             query_params={'name': jt_name}
+                            )
+                    }}"
       retries: 60
       delay: 10
-      until: jt_casc_res.ansible_facts.casc_jt_lookvar | length > 0
+      until: query_res | length > 0
 
     - name: "Create output artifacts"
       set_stats:
         data:
           job_template_name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
 
-    # - name: "Show manual steps"
-    #   debug:
-    #     msg:
-    #       - "{{ jt_casc_res }}"
-    #       - "Remember to:"
-    #       - "  - TODO: crear token en el proyecto git nuevo para usar en las credentials. Se define on-the-fly para creación inicial. Se crea en el repo nuevo con ese contenido"
-    #       - "{{ lookup('pipe', 'pwd') }}"
-    #       - "{{ lookup('pipe', 'ls -lart') }}"
 ...
 ####
 # Running examples:
