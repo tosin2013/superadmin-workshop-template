@@ -32,13 +32,68 @@
       tags:
         - always
 
+    - name: "Create a symlink to the current directory (contains the current project) when project_to_clone is not provided"
+      ansible.builtin.file:
+        src: "."
+        dest: "./checkout"
+        state: link
+      when: project_to_clone is not defined
+      tags:
+        - always
+
+    - name: "Clone the required repo when project_to_clone is provided"
+      environment:
+        - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
+      ansible.builtin.git:
+        repo: "{{ project_to_clone | ansible.builtin.regex_replace('(https?://)','\\1'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
+        dest: "./checkout"
+        version: "{{ casc_gitlab_scm_branch }}"
+      no_log: true
+      when: project_to_clone is defined
+      tags:
+        - always
   roles:
-    # - {role: infra.controller_configuration.filetree_read, assign_galaxy_credentials_to_org: false}
+    - role: infra.controller_configuration.filetree_read
+      vars:
+        filetree_controller_settings: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_settings.d/"
+        filetree_controller_organizations: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_organizations.d/"
+        filetree_controller_labels: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_labels.d/"
+        filetree_controller_user_accounts: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_users.d/"
+        filetree_controller_teams: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_teams.d/"
+        filetree_controller_credential_types: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_credential_types.d/"
+        filetree_controller_credentials:
+          - "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_credentials.d/"
+          - "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_credentials.d/"
+        filetree_controller_credential_input_sources: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_credential_input_sources.d/"
+        filetree_controller_notifications: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_notification_templates.d/"
+        filetree_controller_projects: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_projects.d/"
+        filetree_controller_execution_environments: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_execution_environments.d/"
+        filetree_controller_applications: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_applications.d/"
+        filetree_controller_inventories: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_inventories.d/"
+        filetree_controller_inventory_sources: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_inventory_sources.d/"
+        filetree_controller_instance_groups: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_instance_groups.d/"
+        filetree_controller_hosts: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_hosts.d/"
+        filetree_controller_groups: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_groups.d/"
+        filetree_controller_templates: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_job_templates.d/"
+        filetree_controller_workflow_job_templates: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_workflow_job_templates.d/"
+        filetree_controller_schedules: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_schedules.d/"
+        filetree_controller_roles: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_roles.d/"
+        # assign_galaxy_credentials_to_org: false
+        # filetree_controller_credentials:
+        #   - "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_credentials.d/"
+        #   - "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_credentials.d/"
     # - {role: infra.controller_configuration.dispatch, assign_galaxy_credentials_to_org: false}
-    - {role: infra.controller_configuration.filetree_read}
     - {role: infra.controller_configuration.dispatch}
 
+    # 39     - {role: infra.controller_configuration.filetree_read, assign_galaxy_credentials_to_org: false, assign_default_ee_to_org: false}
+    # 40     - {role: infra.controller_configuration.dispatch, assign_galaxy_credentials_to_org: false, assign_default_ee_to_org: false }
+
   post_tasks:
+    - name: "Cleanup the checkout directory/link"
+      ansible.builtin.file:
+        dest: "./checkout"
+        state: absent
+
     - name: "Delete the Authentication Token used"
       ansible.builtin.uri:
         url: "https://{{ controller_hostname }}{{ controller_oauthtoken_url }}"
@@ -50,4 +105,8 @@
         status_code: 204
       when: controller_oauthtoken_url is defined
 ...
-# ansible-navigator run casc_ctrl_config.yml -i inventory -l dev -e '{orgs: superadmin, dir_orgs_vars: orgs_vars, env: dev, casc_gitlab_scm_branch: dev}' -m stdout --eei quay.io/automationiberia/aap/ee-casc --vault-password-file .vault_password
+# ansible-navigator run casc_ctrl_config.yml -i inventory -l PRE -e '{orgs: SUPERADMIN, dir_orgs_vars: orgs_vars, env: PRE}' -m stdout --eei AH.PRE/ee-casc:latest --vault-password-file .vault_password --pull-arguments=--tls-verify=false
+# ansible-navigator run casc_ctrl_config.yml -i inventory -l PRO -e '{orgs: SUPERADMIN, dir_orgs_vars: orgs_vars, env: PRO}' -m stdout --eei AH.PRO/ee-casc:latest --vault-password-file .vault_password --pull-arguments=--tls-verify=false
+#
+# ansible-navigator run casc_ctrl_config.yml -i inventory -l PRE -e '{orgs: SUPERADMIN, dir_orgs_vars: orgs_vars, env: PRE}' -m stdout --eei quay.io/automationiberia/aap/ee-casc --vault-password-file .vault_password
+# ansible-navigator run casc_ctrl_config.yml -i inventory -l PRO -e '{orgs: SUPERADMIN, dir_orgs_vars: orgs_vars, env: PRO}' -m stdout --eei quay.io/automationiberia/aap/ee-casc --vault-password-file .vault_password

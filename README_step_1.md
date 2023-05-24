@@ -155,12 +155,12 @@ Other important files to be configured are in the following directories:
         ansible_python_interpreter: /usr/bin/python3
         ansible_async_dir: /home/runner/.ansible_async/
       execution_environment: "ee-casc"
-    - name: "{{ orgs }} {{ env }} CasC Ctrl Config Unified"
+    - name: "{{ orgs }} {{ env }} CasC Ctrl Config"
       description: "Template to deploy Controller objects in Org {{ orgs }}"
       organization: "{{ orgs }}"
       project: "{{ orgs }} {{ env }} CasC Data"
       inventory: "{{ orgs }} {{ env }} Controller"
-      playbook: "casc_ctrl_config_unified.yml"
+      playbook: "casc_ctrl_config.yml"
       job_type: run
       fact_caching_enabled: false
       credentials:

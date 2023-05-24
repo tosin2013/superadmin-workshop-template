@@ -5,7 +5,7 @@ controller_templates:
     organization: "{{ orgs }}"
     project: "{{ orgs }} {{ env }} CasC Data"
     inventory: "{{ orgs }} {{ env }} Controller"
-    playbook: "central_casc_ctrl_cd_webhook_trigger.yml"
+    playbook: "casc_ctrl_cd_webhook_trigger.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
@@ -18,12 +18,12 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} {{ env }} CasC Ctrl Config Unified"
+  - name: "{{ organization_name }} {{ env }} CasC Ctrl Config"
     description: "Template to attend Controller CasC Configuration"
     organization: "{{ orgs }}"
     project: "{{ orgs }} {{ env }} CasC Data"
     inventory: "{{ orgs }} {{ env }} Controller"
-    playbook: "casc_ctrl_config_unified.yml"
+    playbook: "casc_ctrl_config.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
@@ -39,12 +39,12 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} {{ env }} CasC Ctrl Drop Diff Unified"
+  - name: "{{ organization_name }} {{ env }} CasC Ctrl Drop Diff"
     description: "Template to attend Controller CasC Drop Diff"
     organization: "{{ orgs }}"
     project: "{{ orgs }} {{ env }} CasC Data"
     inventory: "{{ orgs }} {{ env }} Controller"
-    playbook: "casc_ctrl_drop_diff_unified.yml"
+    playbook: "casc_ctrl_drop_diff.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
