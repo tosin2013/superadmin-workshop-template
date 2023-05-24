@@ -31,7 +31,17 @@
       when: controller_oauthtoken is not defined
       tags:
         - always
-    - name: "Clone the required repo"
+
+    - name: "Create a symlink to the current directory (contains the current project) when project_to_clone is not provided"
+      ansible.builtin.file:
+        src: "."
+        dest: "./checkout"
+        state: link
+      when: project_to_clone is not defined
+      tags:
+        - always
+
+    - name: "Clone the required repo when project_to_clone is provided"
       environment:
         - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
       ansible.builtin.git:
@@ -39,6 +49,7 @@
         dest: "./checkout"
         version: "{{ casc_gitlab_scm_branch }}"
       no_log: true
+      when: project_to_clone is defined
       tags:
         - always
   roles:
@@ -78,26 +89,10 @@
     # 40     - {role: infra.controller_configuration.dispatch, assign_galaxy_credentials_to_org: false, assign_default_ee_to_org: false }
 
   post_tasks:
-    - block:
-        - name: Include Tasks to load Galaxy credentials to be added to Organizations
-          ansible.builtin.include_role:
-            name: infra.controller_configuration.filetree_read
-            tasks_from: organizations.yml
-          vars:
-            filetree_controller_organizations: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/common/controller_organizations.d/"
-            filetree_controller_credentials: "./checkout/{{ dir_orgs_vars }}/{{ orgs }}/env/{{ env }}/controller_credentials.d/"
-
-        - name: Include Tasks to add Galaxy credentials to Organizations
-          ansible.builtin.include_role:
-            name: infra.controller_configuration.dispatch
-            apply:
-              tags:
-                - organizations
-          vars:
-            controller_configuration_dispatcher_roles:
-              - {role: organizations, var: controller_organizations, tags: organizations}
-      tags:
-        - organizations
+    - name: "Cleanup the checkout directory/link"
+      ansible.builtin.file:
+        dest: "./checkout"
+        state: absent
 
     - name: "Delete the Authentication Token used"
       ansible.builtin.uri:

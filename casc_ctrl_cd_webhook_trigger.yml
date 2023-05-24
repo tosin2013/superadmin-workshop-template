@@ -35,14 +35,16 @@
       vars:
         controller_launch_jobs:
           - name: "{{ __drop_diff_org_tags_item.key }} {{ __env }} CasC Ctrl Drop Diff"
-            scm_branch: "{{ __casc_gitlab_scm_branch }}"
+            # scm_branch: "centralize_casc"
             extra_vars:
               orgs: "{{ __drop_diff_org_tags_item.key }}"
               dir_orgs_vars: 'orgs_vars'
               ansible_python_interpreter: "/usr/bin/python3"
               env: "{{ __env }}"
               casc_gitlab_scm_branch: "{{ __casc_gitlab_scm_branch }}"
-              schedule_is_enabled: "{{ __schedule_is_enabled | default(false) }}"
+              project_to_clone: "{{ awx_webhook_payload.project.git_http_url }}"
+              # controller_location: "{{ __controller_location | default(omit,true) }}"
+              # schedule_is_enabled: "{{ __schedule_is_enabled }}"
             tags: "{{ __drop_diff_org_tags_item.value }}"
             wait: true
             verbosity: 0
@@ -57,14 +59,16 @@
       vars:
         controller_launch_jobs:
           - name: "{{ __config_controller_org_tags_item.key }} {{ __env }} CasC Ctrl Config"
-            scm_branch: "{{ __casc_gitlab_scm_branch }}"
+            # scm_branch: "{{ __casc_gitlab_scm_branch }}"
             extra_vars:
               orgs: "{{ __config_controller_org_tags_item.key }}"
               dir_orgs_vars: 'orgs_vars'
               ansible_python_interpreter: "/usr/bin/python3"
               env: "{{ __env }}"
               casc_gitlab_scm_branch: "{{ __casc_gitlab_scm_branch }}"
-              schedule_is_enabled: "{{ __schedule_is_enabled | default(false) }}"
+              project_to_clone: "{{ awx_webhook_payload.project.git_http_url }}"
+              # controller_location: "{{ __controller_location | default(omit,true) }}"
+              # schedule_is_enabled: "{{ __schedule_is_enabled }}"
             tags: "{{ __config_controller_org_tags_item.value }}"
             wait: true
             verbosity: 0

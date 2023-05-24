@@ -10,10 +10,6 @@
     controller_hostname: "{{ vault_controller_hostname | default(lookup('env', 'CONTROLLER_HOST')) }}"
     controller_validate_certs: "{{ vault_controller_validate_certs | default(lookup('env', 'CONTROLLER_VERIFY_SSL')) }}"
   pre_tasks:
-    # - debug:
-    #     msg:
-    #       - "'{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}'"
-    #       - "{{ lookup('ansible.builtin.pipe', 'env') }}"
     - name: "Setup authentication (block)"
       block:
         - name: "Get the Authentication Token for the future requests"
@@ -35,16 +31,28 @@
       when: controller_oauthtoken is not defined
       tags:
         - always
-    - name: "Clone the required repo"
+
+    - name: "Create a symlink to the current directory (contains the current project) when project_to_clone is not provided"
+      ansible.builtin.file:
+        src: "."
+        dest: "./checkout"
+        state: link
+      when: project_to_clone is not defined
+      tags:
+        - always
+
+    - name: "Clone the required repo when project_to_clone is provided"
       environment:
         - GIT_SSL_NO_VERIFY: "{{ git_ssl_no_verify | default(true) }}"
       ansible.builtin.git:
         repo: "{{ project_to_clone | ansible.builtin.regex_replace('(https?://)','\\1'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
         dest: "./checkout"
         version: "{{ casc_gitlab_scm_branch }}"
-      # no_log: true
+      no_log: "{{ controller_configuration_object_diff_secure_logging | default('false') }}"
+      when: project_to_clone is defined
       tags:
         - always
+
   roles:
     - role: infra.controller_configuration.filetree_read
       vars:
@@ -97,17 +105,18 @@
           # - {role: user_accounts, var: controller_user_accounts, tags: users}
           - {role: groups, var: controller_groups, tags: groups}
           - {role: hosts, var: controller_hosts, tags: hosts}
+          - {role: projects, var: controller_projects, tags: projects}
           - {role: inventory_sources, var: controller_inventory_sources, tags: inventory_sources}
           - {role: inventories, var: controller_inventories, tags: inventories}
-          - {role: projects, var: controller_projects, tags: projects}
           - {role: credentials, var: controller_credentials, tags: credentials}
           # - {role: credential_types, var: controller_credential_types, tags: credential_types}
           - {role: organizations, var: controller_organizations, tags: organizations}
   post_tasks:
-    - debug:
-        var: controller_templates
-      tags:
-        - always
+    - name: "Cleanup the checkout directory/link"
+      ansible.builtin.file:
+        dest: "./checkout"
+        state: absent
+
     - name: "Delete the Authentication Token used"
       ansible.builtin.uri:
         url: "https://{{ controller_hostname }}{{ controller_oauthtoken_url }}"
