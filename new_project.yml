@@ -67,7 +67,7 @@
         repo: "{{ gitlab_casc_repo | ansible.builtin.regex_replace('(https?://)','\\1'+gitlab_api_user+':'+gitlab_api_token+'@') }}"
         dest: "./checkout"
         version: "{{ awx_project_scm_branch }}"
-      no_log: false
+      no_log: true
 
     - name: "Create all the required objects"
       vars:
