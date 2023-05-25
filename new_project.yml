@@ -58,7 +58,7 @@
 
     - name: "Set the GitLab URL for the CasC project"
       set_fact:
-        gitlab_casc_repo: "{{ gitlab_api_url }}/{{ gitlab_group }}/{{ gitlab_subgroup }}/{{ orgs }}.git"
+        gitlab_casc_repo: "{{ gitlab_api_url }}/{{ gitlab_group if (gitlab_group is defined and gitlab_group is not regex('^\\s$')) else gitlab_api_user }}{{ ('/' + gitlab_subgroup) if (gitlab_subgroup is defined and gitlab_subgroup is not regex('^\\s*$')) }}/{{ orgs }}.git"
 
     - name: "Clone the required repo"
       environment:
