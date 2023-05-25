@@ -141,6 +141,12 @@
         data:
           job_template_name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
 
+  post_tasks:
+    - name: "Cleanup the checkout directory/link"
+      ansible.builtin.file:
+        dest: "./checkout"
+        state: absent
+
 ...
 ####
 # Running examples:
