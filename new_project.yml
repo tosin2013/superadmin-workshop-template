@@ -52,11 +52,6 @@
             - organization_desc | length > 0
           fail_msg: "the 'organization_desc' variable must be defined to give a description to the organization {{ ('. Current value is: ' + organization_desc) if organization_desc is defined }}"
         - conditions:
-            - instance_groups is defined
-            - (instance_groups | type_debug is match('list')) or (instance_groups | type_debug in ['AnsibleUnicode','AnsibleUnsafeText'])
-            - instance_groups | length > 0
-          fail_msg: "the 'instance_groups' variable must be defined and can't be empty. Can be either a list or comma separated string {{ ('. Current value is: ' + instance_groups + ' - ' + instance_groups|type_debug) if instance_groups is defined }}"
-        - conditions:
             - admin_user is defined
             - admin_user | length > 0
           fail_msg: "the 'admin_user' variable must be defined {{ ('. Current value is: ' + admin_user) if admin_user is defined }}"
