@@ -1,16 +1,16 @@
 ---
 controller_templates:
-  - name: "{{ organization_name }} {{ env }} CasC Ctrl CD Webhook Trigger"
+  - name: "{{ organization_name }} {% raw %}{{ env }}{% endraw %} CasC Ctrl CD Webhook Trigger"
     description: "Template to attend Controller CasC webhook"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} {{ env }} CasC Data"
-    inventory: "{{ orgs }} {{ env }} Controller"
+    project: "{{ orgs }} {% raw %}{{ env }}{% endraw %} CasC Data"
+    inventory: "{{ orgs }} {% raw %}{{ env }}{% endraw %} Controller"
     playbook: "casc_ctrl_cd_webhook_trigger.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ orgs }} {{ env }} AAP Credential"
-      - "{{ orgs }} {{ env }} Vault Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} AAP Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} Vault Credential"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
@@ -18,18 +18,18 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} {{ env }} CasC Ctrl Config"
+  - name: "{{ organization_name }} {% raw %}{{ env }}{% endraw %} CasC Ctrl Config"
     description: "Template to attend Controller CasC Configuration"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} {{ env }} CasC Data"
-    inventory: "{{ orgs }} {{ env }} Controller"
+    project: "{{ orgs }} {% raw %}{{ env }}{% endraw %} CasC Data"
+    inventory: "{{ orgs }} {% raw %}{{ env }}{% endraw %} Controller"
     playbook: "casc_ctrl_config.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ organization_name }} {{ env }} AAP CasC Credential"
-      - "{{ orgs }} {{ env }} Vault Credential"
-      - "{{ orgs }} {{ env }} GitLab API Token"
+      - "{{ organization_name }} {% raw %}{{ env }}{% endraw %} AAP CasC Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} Vault Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} GitLab API Token"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
     ask_tags_on_launch: true
@@ -39,18 +39,18 @@ controller_templates:
       ansible_python_interpreter: /usr/bin/python3
       ansible_async_dir: /home/runner/.ansible_async/
     execution_environment: "ee-casc"
-  - name: "{{ organization_name }} {{ env }} CasC Ctrl Drop Diff"
+  - name: "{{ organization_name }} {% raw %}{{ env }}{% endraw %} CasC Ctrl Drop Diff"
     description: "Template to attend Controller CasC Drop Diff"
     organization: "{{ orgs }}"
-    project: "{{ orgs }} {{ env }} CasC Data"
-    inventory: "{{ orgs }} {{ env }} Controller"
+    project: "{{ orgs }} {% raw %}{{ env }}{% endraw %} CasC Data"
+    inventory: "{{ orgs }} {% raw %}{{ env }}{% endraw %} Controller"
     playbook: "casc_ctrl_drop_diff.yml"
     job_type: run
     fact_caching_enabled: false
     credentials:
-      - "{{ organization_name }} {{ env }} AAP CasC Credential"
-      - "{{ orgs }} {{ env }} Vault Credential"
-      - "{{ orgs }} {{ env }} GitLab API Token"
+      - "{{ organization_name }} {% raw %}{{ env }}{% endraw %} AAP CasC Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} Vault Credential"
+      - "{{ orgs }} {% raw %}{{ env }}{% endraw %} GitLab API Token"
     webhook_service: "gitlab"
     concurrent_jobs_enabled: true
     ask_scm_branch_on_launch: true
